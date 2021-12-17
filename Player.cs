@@ -7,9 +7,12 @@ public class Player : MonoBehaviour
 {
     [SerializeField]
     private float _speed = 3.2f;
+    private float _speedMultiplier = 2;
     
     [SerializeField]
     private GameObject _laserPrefab;
+    [SerializeField]
+    private GameObject _tripleShotPrefab;
     [SerializeField]
     private float _fireRate = 0.5f;
     //determine if we can fire
@@ -18,6 +21,10 @@ public class Player : MonoBehaviour
     private int _lives = 3;
 
     private SpawnManager _spawnManager;
+    [SerializeField]
+    private bool _isTripleShotActive = false;
+    private bool _isSpeedBoostActive = false;
+  
 
     // Start is called before the first frame update
     void Start()
@@ -52,9 +59,12 @@ public class Player : MonoBehaviour
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
 
-        //new Vector3((1, 0, 0) * 3.2f * 0 *  * real time);
+        
         transform.Translate(Vector3.right * _speed * horizontalInput * Time.deltaTime);
-        transform.Translate(Vector3.up * _speed * verticalInput * Time.deltaTime);
+        transform.Translate(Vector3.up * _speed * verticalInput * Time.deltaTime); 
+        
+          
+            
 
         //if  player position on the y is greater than 0
         //y position = 0
@@ -63,15 +73,11 @@ public class Player : MonoBehaviour
 
         if (transform.position.y >= 0)
         {
-
             transform.position = new Vector3(transform.position.x, 0, 0);
         }
         else if (transform.position.y <= -3.4f)
         {
-
-            //run this code
             transform.position = new Vector3(transform.position.x, -3.4f, 0);
-
         }
 
         //wrapping player through both sides of game
@@ -99,8 +105,23 @@ public class Player : MonoBehaviour
         //spawn game object
 
        _canFire = Time.time + _fireRate;
-       Instantiate(_laserPrefab, transform.position + new Vector3(0, 1.05f, 0), Quaternion.identity);
-        
+
+        if (_isTripleShotActive == true)
+        {
+            Instantiate(_tripleShotPrefab, transform.position, Quaternion.identity);
+
+        }
+        else
+        {
+            Instantiate(_laserPrefab, transform.position + new Vector3(0, 1.05f, 0), Quaternion.identity);
+        }
+        //if space key press
+        //if tripleshotActive is true
+            //fire 3 lasers (triple shot prefab)
+
+        //else fire 1 laser
+
+        //instantiate 3 lasers (triple shot prefab)
 
     }
 
@@ -119,4 +140,32 @@ public class Player : MonoBehaviour
         }    
     }
 
+    public void TripleShotActive()
+    {
+        //tripleShotActive becomes true
+        //start the power down coroutine for triple shot
+        _isTripleShotActive = true;
+        StartCoroutine(TripleShotPowerDownRountine());
+
+    }
+
+    IEnumerator TripleShotPowerDownRountine()
+    {
+        yield return new WaitForSeconds(5.0f);
+        _isTripleShotActive = false;
+    }
+
+    public void SpeedBoostActive()
+    {
+        _isSpeedBoostActive = true;
+        _speed *= _speedMultiplier;
+        StartCoroutine(SpeedBoostPowerDownRoutine());
+    }
+
+    IEnumerator SpeedBoostPowerDownRoutine()
+    {
+        yield return new WaitForSeconds(5.0f);
+        _isSpeedBoostActive = false;
+        _speed /= _speedMultiplier;
+    }
 }
