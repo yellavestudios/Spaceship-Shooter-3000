@@ -9,9 +9,13 @@ public class Enemy : MonoBehaviour
 
     private Player _player;
 
+    //handle to animator component
+
     void Start()
     {
         _player = GameObject.Find("Player").GetComponent<Player>();
+        //null check player
+        //assign the component to Anim
     }
 
     // Update is called once per frame
@@ -54,6 +58,7 @@ public class Enemy : MonoBehaviour
                 player.Damage();
             }
 
+            //trigger anim
             Destroy(this.gameObject);
 
         }
@@ -72,6 +77,7 @@ public class Enemy : MonoBehaviour
                 _player.AddScore(10);
             }
 
+            //trigger anim
             Destroy(this.gameObject);
 
         }
