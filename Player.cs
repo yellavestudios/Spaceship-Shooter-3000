@@ -21,9 +21,17 @@ public class Player : MonoBehaviour
     private int _lives = 3;
 
     private SpawnManager _spawnManager;
-    [SerializeField]
+    
     private bool _isTripleShotActive = false;
     private bool _isSpeedBoostActive = false;
+    private bool _isShieldsActive = false;
+
+    [SerializeField]
+    private GameObject _shieldVisualizer;
+    [SerializeField]
+    private int _score;
+
+    private UIManager _uiManager;
   
 
     // Start is called before the first frame update
@@ -34,11 +42,18 @@ public class Player : MonoBehaviour
         //find the object.. get the component
         _spawnManager = GameObject.Find("Spawn_Manager").GetComponent<SpawnManager>();
 
+        _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
+
 
         if (_spawnManager == null)
         {
 
             Debug.LogError ("The Spawn Manager is Null!");
+        }
+
+        if (_uiManager == null)
+        {
+            Debug.LogError("The UI Manager is NULL!");
         }
     }
 
@@ -128,7 +143,22 @@ public class Player : MonoBehaviour
     public void Damage()
     {
 
+        //if shields is activated
+        //do nothing..
+        //deactivate shields
+        //return;
+
+        if (_isShieldsActive == true)
+        {
+            _isShieldsActive = false;
+            _shieldVisualizer.SetActive(false);
+            return;
+
+        }
+
         _lives -= 1;
+
+        _uiManager.UpdateLives(_lives);
 
 
         if (_lives < 1)
@@ -139,6 +169,8 @@ public class Player : MonoBehaviour
             Destroy(this.gameObject);
         }    
     }
+
+    
 
     public void TripleShotActive()
     {
@@ -164,8 +196,22 @@ public class Player : MonoBehaviour
 
     IEnumerator SpeedBoostPowerDownRoutine()
     {
-        yield return new WaitForSeconds(5.0f);
         _isSpeedBoostActive = false;
+        yield return new WaitForSeconds(5.0f);
         _speed /= _speedMultiplier;
+    }
+
+    public void ShieldsActive()
+    {
+        _isShieldsActive = true;
+        _shieldVisualizer.SetActive(true);
+    }
+
+    //add method to add 10 to score
+    //communicate with UI manager to update!
+    public void AddScore(int points)
+    {
+        _score += points;
+        _uiManager.UpdateScore(_score);
     }
 }
