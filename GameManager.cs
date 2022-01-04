@@ -16,7 +16,17 @@ public class GameManager : MonoBehaviour
         {
             SceneManager.LoadScene(1);
         }
+
+        //if esc key is pressed
+        //quit game
+        if (Input.GetKeyDown(KeyCode.Escape)) {
+
+            Application.Quit();
+        }
     }
+
+       
+
 
     public void GameOver()
     {
